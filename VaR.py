@@ -103,7 +103,7 @@ if stocks:
 
                 st.write(f"Número de violações para {stock}: {breaches}")
 
-            ax.legend()
+            plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
             st.pyplot(fig)
     except Exception as e:
         st.error(f"Erro ao baixar os dados: {e}")
