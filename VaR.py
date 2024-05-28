@@ -52,9 +52,10 @@ if stocks:
             # Cálculo do VaR
             var_values = returns.apply(calculate_var, confidence_level=confidence_level)
             var_values_adjusted = var_values * np.sqrt(holding_period)
+            var_value = investment * var_values_adjusted.mean()
             var_percent = var_values_adjusted.mean() * 100
 
-            st.write(f"O Valor em Risco (VaR) é de: {var_percent:.2f}% do valor aplicado")
+            st.write(f"O Valor em Risco (VaR) é de: R$ {var_value:,.2f} ({var_percent:.2f}%)")
 
             # Backtest do VaR
             st.header("Backtest do VaR")
