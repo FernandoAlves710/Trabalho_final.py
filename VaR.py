@@ -53,6 +53,7 @@ confidence_level = st.sidebar.slider("Intervalo de Confiança:", min_value=0.90,
 # Input de período de retenção
 start_date = st.sidebar.date_input("Data inicial:", datetime(2020, 1, 1))
 end_date = st.sidebar.date_input("Data final:", datetime.today())
+holding_period = (end_date - start_date).days  # Cálculo do período de retenção
 
 # Escolha do tipo de VaR
 var_type = st.sidebar.selectbox("Tipo de VaR:", ("Histórico", "Paramétrico", "Monte Carlo"))
@@ -60,7 +61,7 @@ var_type = st.sidebar.selectbox("Tipo de VaR:", ("Histórico", "Paramétrico", "
 # Download dos dados
 if stocks:
     try:
-        data = yf.download(stocks, start=start_date, end=end_date)['Adj Close']
+        data = yf.download(stocks, start="2020-01-01", end=datetime.today().strftime('%Y-%m-%d'))['Adj Close']
         
         if data.empty:
             st.error("Erro ao baixar os dados: Nenhum dado retornado.")
@@ -80,7 +81,7 @@ if stocks:
                 var_function = monte_carlo_var
 
             var_values = returns.apply(var_function, confidence_level=confidence_level)
-            var_values_adjusted = var_values * np.sqrt((end_date - start_date).days)  # Utiliza o número de dias entre as datas
+            var_values_adjusted = var_values * np.sqrt(holding_period)
             var_value = investment * var_values_adjusted.mean()
             var_percent = var_values_adjusted.mean() * 100
 
@@ -92,7 +93,7 @@ if stocks:
 
             for stock in stocks:
                 stock_returns = returns[stock]
-                stock_var_series = stock_returns.rolling(window=(end_date - start_date).days).apply(var_function, kwargs={'confidence_level': confidence_level}).dropna()
+                stock_var_series = stock_returns.rolling(window=holding_period).apply(var_function, kwargs={'confidence_level': confidence_level}).dropna()
 
                 # Alinhando os índices de returns e var_series para comparações
                 aligned_stock_returns = stock_returns.loc[stock_var_series.index]
