@@ -40,8 +40,8 @@ st.sidebar.header("Configurações")
 # Seleção das ações do Yahoo Finance
 stocks = st.sidebar.multiselect(
     'Selecione as ações:',
-    ('AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'BRK-A', 'V', 'JNJ', 'WMT', 'PETR4.SA', 'ITUB4.SA', 'VALE3.SA', 'BBDC4.SA', 'B3SA3.SA'),
-    ('AAPL', 'MSFT', 'PETR4.SA', 'ITUB4.SA')  # Exemplo com algumas ações selecionadas por padrão
+    ('AAPL', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA', 'BRK-A', 'V', 'JNJ', 'WMT'),
+    ('AAPL', 'MSFT')
 )
 
 # Input de exposição (valor aplicado)
@@ -51,9 +51,7 @@ investment = st.sidebar.number_input("Exposição (valor aplicado):", min_value=
 confidence_level = st.sidebar.slider("Intervalo de Confiança:", min_value=0.90, max_value=0.99, value=0.95, step=0.01)
 
 # Input de período de retenção
-start_date = st.sidebar.date_input("Data inicial:", datetime(2020, 1, 1))
-end_date = st.sidebar.date_input("Data final:", datetime.today())
-holding_period = (end_date - start_date).days  # Cálculo do período de retenção
+holding_period = st.sidebar.number_input("Período de Retenção (dias):", min_value=1, max_value=252, value=10)
 
 # Escolha do tipo de VaR
 var_type = st.sidebar.selectbox("Tipo de VaR:", ("Histórico", "Paramétrico", "Monte Carlo"))
