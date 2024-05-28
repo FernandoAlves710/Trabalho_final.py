@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 import matplotlib.pyplot as plt
-import scipy.stats as stats
+import seaborn as sns
 
 # Função para calcular o VaR histórico
 def historical_var(returns, confidence_level):
@@ -87,7 +87,7 @@ if stocks:
 
             # Backtest do VaR
             st.header("Backtest do VaR")
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=(10, 6))
 
             for stock in stocks:
                 stock_returns = returns[stock]
@@ -98,12 +98,16 @@ if stocks:
 
                 breaches = backtest_var(aligned_stock_returns, stock_var_series)
 
-                aligned_stock_returns.plot(ax=ax, label=f'Retorno Diário {stock}')
-                stock_var_series.plot(ax=ax, label=f'VaR {stock}', linestyle='--')
+                aligned_stock_returns.plot(ax=ax, label=f'Retorno Diário {stock}', linewidth=2)
+                stock_var_series.plot(ax=ax, label=f'VaR {stock}', linestyle='--', color='red', linewidth=2)
 
                 st.write(f"Número de violações para {stock}: {breaches}")
 
-            ax.legend()
+            ax.set_title("Backtest do VaR", fontsize=16)
+            ax.set_xlabel("Data", fontsize=14)
+            ax.set_ylabel("Retorno / VaR", fontsize=14)
+            ax.legend(fontsize=12)
+            sns.despine()
             st.pyplot(fig)
     except Exception as e:
         st.error(f"Erro ao baixar os dados: {e}")
