@@ -59,20 +59,24 @@ if stocks:
 
             # Backtest do VaR
             st.header("Backtest do VaR")
-            var_series = returns.rolling(window=holding_period).apply(calculate_var, kwargs={'confidence_level': confidence_level}).dropna()
-
-            # Alinhando os índices de returns e var_series para comparações
-            aligned_returns = returns.loc[var_series.index]
-
-            breaches = backtest_var(aligned_returns, var_series)
-
             fig, ax = plt.subplots()
-            aligned_returns.plot(ax=ax, label='Retornos Diários')
-            var_series.plot(ax=ax, label='VaR', color='red')
+
+            for stock in stocks:
+                stock_returns = returns[stock]
+                stock_var_series = stock_returns.rolling(window=holding_period).apply(calculate_var, kwargs={'confidence_level': confidence_level}).dropna()
+
+                # Alinhando os índices de returns e var_series para comparações
+                aligned_stock_returns = stock_returns.loc[stock_var_series.index]
+
+                breaches = backtest_var(aligned_stock_returns, stock_var_series)
+
+                aligned_stock_returns.plot(ax=ax, label=f'Retorno Diário {stock}')
+                stock_var_series.plot(ax=ax, label=f'VaR {stock}', linestyle='--')
+
+                st.write(f"Número de violações para {stock}: {breaches}")
+
             ax.legend()
             st.pyplot(fig)
-
-            st.write(f"Número de violações: {breaches}")
     except Exception as e:
         st.error(f"Erro ao baixar os dados: {e}")
 else:
