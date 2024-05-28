@@ -13,7 +13,7 @@ def calculate_var(returns, confidence_level, holding_period, investment):
     return var_value
 
 # Função para realizar o backtest do VaR
-def backtest_var(returns, confidence_level, holding_period, investment):
+def backtest_var(returns, confidence_level, holding_period):
     var_series = []
     breaches = 0
 
@@ -66,7 +66,7 @@ if len(stocks) > 0:
 
             # Backtest do VaR
             st.header("Backtest do VaR")
-            var_series, breaches = backtest_var(returns, confidence_level, holding_period, investment)
+            var_series, breaches = backtest_var(returns, confidence_level, holding_period)
             
             fig, ax = plt.subplots()
             returns.plot(ax=ax, label='Retornos Diários')
