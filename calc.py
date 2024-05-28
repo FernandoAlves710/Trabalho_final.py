@@ -79,5 +79,3 @@ if len(stocks) > 0:
         st.error(f"Erro ao baixar os dados: {e}")
 else:
     st.warning("Por favor, selecione pelo menos uma ação.")
-
-# Rodar a aplicação com `streamlit run app.py`
