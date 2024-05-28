@@ -40,8 +40,8 @@ st.sidebar.header("Configurações")
 # Seleção das ações do Yahoo Finance
 stocks = st.sidebar.multiselect(
     'Selecione as ações:',
-    ('AAPL', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA', 'BRK-A', 'V', 'JNJ', 'WMT'),
-    ('AAPL', 'MSFT')
+    ('AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'BRK-A', 'V', 'JNJ', 'WMT', 'PETR4.SA', 'ITUB4.SA', 'VALE3.SA', 'BBDC4.SA', 'B3SA3.SA'),
+    ('AAPL', 'MSFT', 'PETR4.SA', 'ITUB4.SA')  # Exemplo com algumas ações selecionadas por padrão
 )
 
 # Input de exposição (valor aplicado)
@@ -51,7 +51,8 @@ investment = st.sidebar.number_input("Exposição (valor aplicado):", min_value=
 confidence_level = st.sidebar.slider("Intervalo de Confiança:", min_value=0.90, max_value=0.99, value=0.95, step=0.01)
 
 # Input de período de retenção
-holding_period = st.sidebar.number_input("Período de Retenção (dias):", min_value=1, max_value=252, value=10)
+start_date = st.sidebar.date_input("Data inicial:", datetime(2020, 1, 1))
+end_date = st.sidebar.date_input("Data final:", datetime.today())
 
 # Escolha do tipo de VaR
 var_type = st.sidebar.selectbox("Tipo de VaR:", ("Histórico", "Paramétrico", "Monte Carlo"))
@@ -59,7 +60,7 @@ var_type = st.sidebar.selectbox("Tipo de VaR:", ("Histórico", "Paramétrico", "
 # Download dos dados
 if stocks:
     try:
-        data = yf.download(stocks, start="2020-01-01", end=datetime.today().strftime('%Y-%m-%d'))['Adj Close']
+        data = yf.download(stocks, start=start_date, end=end_date)['Adj Close']
         
         if data.empty:
             st.error("Erro ao baixar os dados: Nenhum dado retornado.")
@@ -79,7 +80,7 @@ if stocks:
                 var_function = monte_carlo_var
 
             var_values = returns.apply(var_function, confidence_level=confidence_level)
-            var_values_adjusted = var_values * np.sqrt(holding_period)
+            var_values_adjusted = var_values * np.sqrt((end_date - start_date).days)  # Utiliza o número de dias entre as datas
             var_value = investment * var_values_adjusted.mean()
             var_percent = var_values_adjusted.mean() * 100
 
@@ -91,7 +92,7 @@ if stocks:
 
             for stock in stocks:
                 stock_returns = returns[stock]
-                stock_var_series = stock_returns.rolling(window=holding_period).apply(var_function, kwargs={'confidence_level': confidence_level}).dropna()
+                stock_var_series = stock_returns.rolling(window=(end_date - start_date).days).apply(var_function, kwargs={'confidence_level': confidence_level}).dropna()
 
                 # Alinhando os índices de returns e var_series para comparações
                 aligned_stock_returns = stock_returns.loc[stock_var_series.index]
