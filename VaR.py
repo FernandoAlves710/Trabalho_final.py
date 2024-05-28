@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 # Função para calcular o VaR histórico
 def historical_var(returns, confidence_level):
@@ -107,7 +106,9 @@ if stocks:
             ax.set_xlabel("Data", fontsize=14)
             ax.set_ylabel("Retorno / VaR", fontsize=14)
             ax.legend(fontsize=12)
-            sns.despine()
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+            ax.grid(True, linestyle='--', alpha=0.6)
             st.pyplot(fig)
     except Exception as e:
         st.error(f"Erro ao baixar os dados: {e}")
