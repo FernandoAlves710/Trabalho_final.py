@@ -59,10 +59,14 @@ if stocks:
             # Backtest do VaR
             st.header("Backtest do VaR")
             var_series = returns.rolling(window=holding_period).apply(calculate_var, kwargs={'confidence_level': confidence_level}).dropna()
-            breaches = backtest_var(returns[holding_period:], var_series)
+
+            # Alinhando os índices de returns e var_series para comparações
+            aligned_returns = returns.loc[var_series.index]
+
+            breaches = backtest_var(aligned_returns, var_series)
 
             fig, ax = plt.subplots()
-            returns.plot(ax=ax, label='Retornos Diários')
+            aligned_returns.plot(ax=ax, label='Retornos Diários')
             var_series.plot(ax=ax, label='VaR', color='red')
             ax.legend()
             st.pyplot(fig)
